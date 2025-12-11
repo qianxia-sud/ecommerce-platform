@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品管理 - 电商后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --primary-color: #2c3e50; --secondary-color: #3498db; --bg-color: #ecf0f1; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); }
+        .sidebar { background: var(--primary-color); min-height: 100vh; color: white; padding-top: 20px; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.8); padding: 15px 20px; border-left: 3px solid transparent; transition: all 0.3s; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.1); color: white; border-left-color: var(--secondary-color); }
+        .sidebar .nav-link i { margin-right: 10px; }
+        .main-content { padding: 30px; }
+        .brand-title { font-size: 1.5rem; font-weight: 700; color: white; padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .content-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .table th { background: #f8f9fa; font-weight: 600; }
+        .btn-action { padding: 5px 10px; font-size: 0.85rem; }
+        .product-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar">
+                <div class="brand-title"><i class="bi bi-shop"></i> 电商管理系统</div>
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="/index"><i class="bi bi-house-door"></i> 首页</a>
+                    <a class="nav-link" href="/users"><i class="bi bi-people"></i> 用户管理</a>
+                    <a class="nav-link active" href="/products"><i class="bi bi-box-seam"></i> 商品管理</a>
+                    <a class="nav-link" href="/categories"><i class="bi bi-tags"></i> 分类管理</a>
+                    <a class="nav-link" href="/orders"><i class="bi bi-receipt"></i> 订单管理</a>
+                    <a class="nav-link" href="/inventory"><i class="bi bi-boxes"></i> 库存管理</a>
+                </nav>
+            </div>
+            
+            <div class="col-md-10 main-content">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0"><i class="bi bi-box-seam me-2"></i>商品管理</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                            <i class="bi bi-plus-lg me-1"></i>添加商品
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>图片</th>
+                                    <th>商品名称</th>
+                                    <th>分类</th>
+                                    <th>价格</th>
+                                    <th>库存</th>
+                                    <th>销量</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTable">
+                                <tr><td colspan="9" class="text-center">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 商品模态框 -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加商品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">商品名称</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">分类ID</label>
+                                <input type="number" class="form-control" name="categoryId" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">价格</label>
+                                <input type="number" step="0.01" class="form-control" name="price" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">市场价</label>
+                                <input type="number" step="0.01" class="form-control" name="marketPrice">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">商品描述</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">主图URL</label>
+                            <input type="text" class="form-control" name="mainImage" placeholder="https://example.com/image.jpg">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        
+        function loadProducts() {
+            fetch(`${API_BASE}/product/list`)
+                .then(r => r.json())
+                .then(result => {
+                    if (result.code === 200 && result.data && result.data.list) {
+                        renderProducts(result.data.list);
+                    }
+                })
+                .catch(e => {
+                    document.getElementById('productTable').innerHTML = '<tr><td colspan="9" class="text-center text-danger">加载失败，请确保商品服务已启动</td></tr>';
+                });
+        }
+        
+        function renderProducts(products) {
+            const tbody = document.getElementById('productTable');
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center">暂无数据</td></tr>';
+                return;
+            }
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td><img src="${p.mainImage || 'https://via.placeholder.com/50'}" class="product-img" onerror="this.src='https://via.placeholder.com/50'"></td>
+                    <td>${p.name}</td>
+                    <td>${p.categoryName || '-'}</td>
+                    <td class="text-danger">¥${p.price}</td>
+                    <td>${p.stock || 0}</td>
+                    <td>${p.sales || 0}</td>
+                    <td><span class="badge ${p.status === 1 ? 'bg-success' : 'bg-secondary'}">${p.status === 1 ? '上架' : '下架'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary btn-action me-1" onclick="toggleStatus(${p.id}, ${p.status})">
+                            ${p.status === 1 ? '下架' : '上架'}
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteProduct(${p.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function saveProduct() {
+            const form = document.getElementById('productForm');
+            const data = Object.fromEntries(new FormData(form));
+            data.categoryId = parseInt(data.categoryId);
+            data.price = parseFloat(data.price);
+            if (data.marketPrice) data.marketPrice = parseFloat(data.marketPrice);
+            
+            fetch(`${API_BASE}/product`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.code === 200) {
+                    bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+                    form.reset();
+                    loadProducts();
+                    alert('添加成功');
+                } else {
+                    alert(result.message || '添加失败');
+                }
+            });
+        }
+        
+        function toggleStatus(id, currentStatus) {
+            const action = currentStatus === 1 ? 'off-shelf' : 'on-shelf';
+            fetch(`${API_BASE}/product/${id}/${action}`, {method: 'PUT'})
+                .then(r => r.json())
+                .then(result => {
+                    if (result.code === 200) {
+                        loadProducts();
+                    } else {
+                        alert(result.message || '操作失败');
+                    }
+                });
+        }
+        
+        function deleteProduct(id) {
+            if (confirm('确定要删除此商品吗？')) {
+                fetch(`${API_BASE}/product/${id}`, {method: 'DELETE'})
+                    .then(r => r.json())
+                    .then(result => {
+                        if (result.code === 200) {
+                            loadProducts();
+                        } else {
+                            alert(result.message || '删除失败');
+                        }
+                    });
+            }
+        }
+        
+        loadProducts();
+    </script>
+</body>
+</html>
+

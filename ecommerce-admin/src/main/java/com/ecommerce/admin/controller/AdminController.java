@@ -1,0 +1,60 @@
+package com.ecommerce.admin.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+/**
+ * 管理后台页面控制器
+ */
+@Controller
+public class AdminController {
+    
+    /**
+     * 首页
+     */
+    @GetMapping({"/", "/index"})
+    public String index() {
+        return "index";
+    }
+    
+    /**
+     * 用户管理页面
+     */
+    @GetMapping("/users")
+    public String users() {
+        return "users";
+    }
+    
+    /**
+     * 商品管理页面
+     */
+    @GetMapping("/products")
+    public String products() {
+        return "products";
+    }
+    
+    /**
+     * 分类管理页面
+     */
+    @GetMapping("/categories")
+    public String categories() {
+        return "categories";
+    }
+    
+    /**
+     * 订单管理页面
+     */
+    @GetMapping("/orders")
+    public String orders() {
+        return "orders";
+    }
+    
+    /**
+     * 库存管理页面
+     */
+    @GetMapping("/inventory")
+    public String inventory() {
+        return "inventory";
+    }
+}
+

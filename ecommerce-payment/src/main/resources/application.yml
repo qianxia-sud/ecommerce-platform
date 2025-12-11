@@ -1,0 +1,46 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: payment-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ecommerce_payment?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+logging:
+  level:
+    com.ecommerce: DEBUG
+
+# 支付配置（预留接口，可扩展实际支付渠道）
+payment:
+  # 微信支付配置（预留）
+  wechat:
+    app-id: your-wechat-app-id
+    mch-id: your-mch-id
+    api-key: your-api-key
+    notify-url: http://localhost:8085/payment/callback/wechat
+  # 支付宝配置（预留）
+  alipay:
+    app-id: your-alipay-app-id
+    private-key: your-private-key
+    public-key: alipay-public-key
+    notify-url: http://localhost:8085/payment/callback/alipay
+
