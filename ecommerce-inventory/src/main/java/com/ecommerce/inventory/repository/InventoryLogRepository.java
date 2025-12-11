@@ -30,3 +30,4 @@ public interface InventoryLogRepository extends JpaRepository<InventoryLog, Long
     Page<InventoryLog> findByProductId(Long productId, Pageable pageable);
 }
 
+
