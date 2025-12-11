@@ -196,45 +196,45 @@ CREATE TABLE IF NOT EXISTS t_payment (
 
 -- 插入测试用户
 USE ecommerce_user;
-INSERT INTO t_user (username, password, nickname, email, phone, status, role) VALUES
-('admin', 'e10adc3949ba59abbe56e057f20f883e', '管理员', 'admin@example.com', '13800138000', 1, 'ADMIN'),
-('user1', 'e10adc3949ba59abbe56e057f20f883e', '测试用户1', 'user1@example.com', '13800138001', 1, 'USER'),
-('user2', 'e10adc3949ba59abbe56e057f20f883e', '测试用户2', 'user2@example.com', '13800138002', 1, 'USER');
+INSERT INTO t_user (username, password, nickname, email, phone, status, role, create_time, update_time) VALUES
+('admin', 'e10adc3949ba59abbe56e057f20f883e', '管理员', 'admin@example.com', '13800138000', 1, 'ADMIN', NOW(), NOW()),
+('user1', 'e10adc3949ba59abbe56e057f20f883e', '测试用户1', 'user1@example.com', '13800138001', 1, 'USER', NOW(), NOW()),
+('user2', 'e10adc3949ba59abbe56e057f20f883e', '测试用户2', 'user2@example.com', '13800138002', 1, 'USER', NOW(), NOW());
 -- 密码都是: 123456 (MD5加密后)
 -- admin 是管理员角色，user1/user2 是普通用户角色
 
 -- 插入测试地址
-INSERT INTO t_user_address (user_id, receiver_name, receiver_phone, province, city, district, detail_address, is_default) VALUES
-(1, '张三', '13800138000', '北京市', '北京市', '朝阳区', '某某街道123号', 1),
-(2, '李四', '13800138001', '上海市', '上海市', '浦东新区', '某某路456号', 1);
+INSERT INTO t_user_address (user_id, receiver_name, receiver_phone, province, city, district, detail_address, is_default, create_time, update_time) VALUES
+(1, '张三', '13800138000', '北京市', '北京市', '朝阳区', '某某街道123号', 1, NOW(), NOW()),
+(2, '李四', '13800138001', '上海市', '上海市', '浦东新区', '某某路456号', 1, NOW(), NOW());
 
 -- 插入测试分类
 USE ecommerce_product;
-INSERT INTO t_category (name, parent_id, level, sort, status) VALUES
-('电子产品', 0, 1, 1, 1),
-('服装服饰', 0, 1, 2, 1),
-('食品饮料', 0, 1, 3, 1),
-('手机', 1, 2, 1, 1),
-('电脑', 1, 2, 2, 1),
-('男装', 2, 2, 1, 1),
-('女装', 2, 2, 2, 1);
+INSERT INTO t_category (name, parent_id, level, sort, status, create_time, update_time) VALUES
+('电子产品', 0, 1, 1, 1, NOW(), NOW()),
+('服装服饰', 0, 1, 2, 1, NOW(), NOW()),
+('食品饮料', 0, 1, 3, 1, NOW(), NOW()),
+('手机', 1, 2, 1, 1, NOW(), NOW()),
+('电脑', 1, 2, 2, 1, NOW(), NOW()),
+('男装', 2, 2, 1, 1, NOW(), NOW()),
+('女装', 2, 2, 2, 1, NOW(), NOW());
 
 -- 插入测试商品
-INSERT INTO t_product (name, description, category_id, price, market_price, main_image, status, sales) VALUES
-('iPhone 15 Pro', '苹果最新旗舰手机，A17 Pro芯片', 4, 8999.00, 9999.00, 'https://via.placeholder.com/300x300?text=iPhone15', 1, 100),
-('MacBook Pro 14', '苹果笔记本电脑，M3 Pro芯片', 5, 14999.00, 16999.00, 'https://via.placeholder.com/300x300?text=MacBook', 1, 50),
-('华为Mate60 Pro', '华为旗舰手机，麒麟芯片回归', 4, 6999.00, 7999.00, 'https://via.placeholder.com/300x300?text=Mate60', 1, 200),
-('纯棉T恤', '100%纯棉，舒适透气', 6, 99.00, 199.00, 'https://via.placeholder.com/300x300?text=T-Shirt', 1, 500),
-('连衣裙', '夏季新款，时尚优雅', 7, 299.00, 499.00, 'https://via.placeholder.com/300x300?text=Dress', 1, 300);
+INSERT INTO t_product (name, description, category_id, price, market_price, main_image, status, sales, create_time, update_time) VALUES
+('iPhone 15 Pro', '苹果最新旗舰手机，A17 Pro芯片', 4, 8999.00, 9999.00, 'https://via.placeholder.com/300x300?text=iPhone15', 1, 100, NOW(), NOW()),
+('MacBook Pro 14', '苹果笔记本电脑，M3 Pro芯片', 5, 14999.00, 16999.00, 'https://via.placeholder.com/300x300?text=MacBook', 1, 50, NOW(), NOW()),
+('华为Mate60 Pro', '华为旗舰手机，麒麟芯片回归', 4, 6999.00, 7999.00, 'https://via.placeholder.com/300x300?text=Mate60', 1, 200, NOW(), NOW()),
+('纯棉T恤', '100%纯棉，舒适透气', 6, 99.00, 199.00, 'https://via.placeholder.com/300x300?text=T-Shirt', 1, 500, NOW(), NOW()),
+('连衣裙', '夏季新款，时尚优雅', 7, 299.00, 499.00, 'https://via.placeholder.com/300x300?text=Dress', 1, 300, NOW(), NOW());
 
 -- 插入测试库存
 USE ecommerce_inventory;
-INSERT INTO t_inventory (product_id, total_stock, available_stock, locked_stock, warning_threshold) VALUES
-(1, 100, 100, 0, 10),
-(2, 50, 50, 0, 5),
-(3, 200, 200, 0, 20),
-(4, 1000, 1000, 0, 50),
-(5, 500, 500, 0, 30);
+INSERT INTO t_inventory (product_id, total_stock, available_stock, locked_stock, warning_threshold, create_time, update_time) VALUES
+(1, 100, 100, 0, 10, NOW(), NOW()),
+(2, 50, 50, 0, 5, NOW(), NOW()),
+(3, 200, 200, 0, 20, NOW(), NOW()),
+(4, 1000, 1000, 0, 50, NOW(), NOW()),
+(5, 500, 500, 0, 30, NOW(), NOW());
 
 SELECT '数据库初始化完成！' AS message;
 
