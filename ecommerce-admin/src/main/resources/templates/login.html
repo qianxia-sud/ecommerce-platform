@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 电商后台管理系统</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .login-header .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 32px;
+            color: white;
+        }
+        .login-header h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .login-header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .form-floating {
+            margin-bottom: 20px;
+        }
+        .form-floating input {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 15px;
+            height: 55px;
+            transition: all 0.3s;
+        }
+        .form-floating input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+        .form-floating label {
+            padding: 15px;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .btn-login:disabled {
+            opacity: 0.7;
+            transform: none;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e9ecef;
+        }
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .demo-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .demo-info strong {
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="bi bi-shop"></i>
+                </div>
+                <h1>电商管理系统</h1>
+                <p>请登录以继续</p>
+            </div>
+            
+            <div id="alertBox"></div>
+            
+            <form id="loginForm">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="用户名" required>
+                    <label for="username"><i class="bi bi-person me-2"></i>用户名</label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="密码" required>
+                    <label for="password"><i class="bi bi-lock me-2"></i>密码</label>
+                </div>
+                <button type="submit" class="btn btn-login" id="loginBtn">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>登 录
+                </button>
+            </form>
+            
+            <div class="register-link">
+                还没有账号？<a href="/register">立即注册</a>
+            </div>
+            
+            <div class="demo-info">
+                <strong><i class="bi bi-info-circle me-1"></i>测试账号：</strong><br>
+                用户名：admin / user1 / user2<br>
+                密码：123456
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        
+        function showAlert(message, type = 'danger') {
+            document.getElementById('alertBox').innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('loginBtn');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>登录中...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/user/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, password})
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200 && result.data) {
+                    // 保存登录信息
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+                    
+                    showAlert('登录成功，正在跳转...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/index';
+                    }, 1000);
+                } else {
+                    showAlert(result.message || '登录失败，请检查用户名和密码');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>登 录';
+                }
+            } catch (error) {
+                showAlert('无法连接到服务器，请确保所有服务已启动');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>登 录';
+            }
+        });
+        
+        // 如果已登录，直接跳转
+        if (localStorage.getItem('token')) {
+            window.location.href = '/index';
+        }
+    </script>
+</body>
+</html>
+

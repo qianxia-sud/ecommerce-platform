@@ -10,9 +10,41 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminController {
     
     /**
+     * 登录页面
+     */
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+    
+    /**
+     * 注册页面
+     */
+    @GetMapping("/register")
+    public String register() {
+        return "register";
+    }
+    
+    /**
+     * 退出登录
+     */
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/login";
+    }
+    
+    /**
+     * 首页（根路径重定向到登录）
+     */
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
+    }
+    
+    /**
      * 首页
      */
-    @GetMapping({"/", "/index"})
+    @GetMapping("/index")
     public String index() {
         return "index";
     }
