@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService {
                 .phone(userDTO.getPhone())
                 .avatar(userDTO.getAvatar())
                 .status(1)
+                .role(userDTO.getRole() != null ? userDTO.getRole() : "USER")
                 .build();
         
         user = userRepository.save(user);
@@ -220,6 +221,7 @@ public class UserServiceImpl implements UserService {
                 .phone(user.getPhone())
                 .avatar(user.getAvatar())
                 .status(user.getStatus())
+                .role(user.getRole())
                 .createTime(user.getCreateTime())
                 .build();
     }

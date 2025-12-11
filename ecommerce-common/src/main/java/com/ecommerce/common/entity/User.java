@@ -54,6 +54,10 @@ public class User implements Serializable {
     @Column(nullable = false)
     private Integer status = 1;
     
+    /** 角色：ADMIN-管理员，USER-普通用户 */
+    @Column(length = 20)
+    private String role = "USER";
+    
     /** 创建时间 */
     @Column(nullable = false, updatable = false)
     private LocalDateTime createTime;

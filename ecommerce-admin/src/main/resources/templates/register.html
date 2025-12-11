@@ -110,6 +110,51 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+        .role-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .role-option {
+            flex: 1;
+            position: relative;
+        }
+        .role-option input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .role-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        .role-option label i {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #6c757d;
+        }
+        .role-option label span {
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        .role-option input:checked + label {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+        .role-option input:checked + label i,
+        .role-option input:checked + label span {
+            color: #667eea;
+        }
         .alert {
             border-radius: 10px;
             margin-bottom: 20px;
@@ -135,6 +180,25 @@
             <div id="alertBox"></div>
             
             <form id="registerForm">
+                <div class="mb-3">
+                    <label class="form-label text-muted small mb-2">选择注册身份</label>
+                    <div class="role-selector">
+                        <div class="role-option">
+                            <input type="radio" name="role" id="roleAdmin" value="ADMIN">
+                            <label for="roleAdmin">
+                                <i class="bi bi-shield-check"></i>
+                                <span>管理员</span>
+                            </label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" id="roleUser" value="USER" checked>
+                            <label for="roleUser">
+                                <i class="bi bi-person-circle"></i>
+                                <span>普通用户</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-floating">
                     <input type="text" class="form-control" id="username" name="username" placeholder="用户名" required minlength="3" maxlength="20">
                     <label for="username"><i class="bi bi-person me-2"></i>用户名 *</label>
@@ -199,12 +263,14 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>注册中...';
             
+            const selectedRole = document.querySelector('input[name="role"]:checked').value;
             const formData = {
                 username: document.getElementById('username').value,
                 password: password,
                 nickname: document.getElementById('nickname').value || null,
                 email: document.getElementById('email').value || null,
-                phone: document.getElementById('phone').value || null
+                phone: document.getElementById('phone').value || null,
+                role: selectedRole
             };
             
             try {

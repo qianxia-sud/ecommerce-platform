@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS t_user (
     phone VARCHAR(20) COMMENT '手机号',
     avatar VARCHAR(255) COMMENT '头像URL',
     status INT NOT NULL DEFAULT 1 COMMENT '状态：0-禁用，1-正常',
+    role VARCHAR(20) NOT NULL DEFAULT 'USER' COMMENT '角色：ADMIN-管理员，USER-普通用户',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_username (username),
@@ -195,11 +196,12 @@ CREATE TABLE IF NOT EXISTS t_payment (
 
 -- 插入测试用户
 USE ecommerce_user;
-INSERT INTO t_user (username, password, nickname, email, phone, status) VALUES
-('admin', 'e10adc3949ba59abbe56e057f20f883e', '管理员', 'admin@example.com', '13800138000', 1),
-('user1', 'e10adc3949ba59abbe56e057f20f883e', '测试用户1', 'user1@example.com', '13800138001', 1),
-('user2', 'e10adc3949ba59abbe56e057f20f883e', '测试用户2', 'user2@example.com', '13800138002', 1);
+INSERT INTO t_user (username, password, nickname, email, phone, status, role) VALUES
+('admin', 'e10adc3949ba59abbe56e057f20f883e', '管理员', 'admin@example.com', '13800138000', 1, 'ADMIN'),
+('user1', 'e10adc3949ba59abbe56e057f20f883e', '测试用户1', 'user1@example.com', '13800138001', 1, 'USER'),
+('user2', 'e10adc3949ba59abbe56e057f20f883e', '测试用户2', 'user2@example.com', '13800138002', 1, 'USER');
 -- 密码都是: 123456 (MD5加密后)
+-- admin 是管理员角色，user1/user2 是普通用户角色
 
 -- 插入测试地址
 INSERT INTO t_user_address (user_id, receiver_name, receiver_phone, province, city, district, detail_address, is_default) VALUES

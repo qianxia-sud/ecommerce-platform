@@ -35,6 +35,9 @@ public class UserDTO implements Serializable {
     private String phone;
     
     private String avatar;
+    
+    /** 角色：ADMIN-管理员，USER-普通用户 */
+    private String role;
 }
 
 
