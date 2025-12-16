@@ -281,8 +281,13 @@
                     
                     showAlert('登录成功，正在跳转...', 'success');
                     
+                    // 根据角色跳转到不同页面
                     setTimeout(() => {
-                        window.location.href = '/index';
+                        if (userRole === 'ADMIN') {
+                            window.location.href = '/index';  // 管理员跳转到管理后台
+                        } else {
+                            window.location.href = '/shop';   // 普通用户跳转到购物前台
+                        }
                     }, 1000);
                 } else {
                     showAlert(result.message || '登录失败，请检查用户名和密码');
@@ -296,9 +301,15 @@
             }
         });
         
-        // 如果已登录，直接跳转
-        if (localStorage.getItem('token')) {
-            window.location.href = '/index';
+        // 如果已登录，根据角色跳转
+        const savedUser = localStorage.getItem('user');
+        if (localStorage.getItem('token') && savedUser) {
+            const user = JSON.parse(savedUser);
+            if (user.role === 'ADMIN') {
+                window.location.href = '/index';
+            } else {
+                window.location.href = '/shop';
+            }
         }
     </script>
 </body>

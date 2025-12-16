@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情 - 优品商城</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --accent-color: #ffcc00;
+            --dark-bg: #1a1a2e;
+            --card-bg: #ffffff;
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --border-radius: 16px;
+        }
+        
+        * {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .top-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            color: var(--text-primary);
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-icon-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50px;
+        }
+        
+        .main-content {
+            padding: 30px 0;
+        }
+        
+        .product-detail-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-gallery {
+            padding: 30px;
+        }
+        
+        .main-image {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        
+        .thumbnail-list {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .thumbnail.active, .thumbnail:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info-section {
+            padding: 30px;
+        }
+        
+        .product-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+        
+        .product-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        
+        .price-section {
+            background: linear-gradient(135deg, #fff5f0, #ffe8df);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .current-price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .original-price {
+            font-size: 1.1rem;
+            color: #adb5bd;
+            text-decoration: line-through;
+            margin-left: 15px;
+        }
+        
+        .discount-tag {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .info-label {
+            width: 80px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .info-value {
+            flex: 1;
+            color: var(--text-primary);
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quantity-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-add-cart {
+            flex: 1;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-cart:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .btn-buy-now {
+            flex: 1;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-buy-now:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            color: white;
+        }
+        
+        .product-description {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .stock-badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+        
+        .stock-badge.in-stock {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .stock-badge.low-stock {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .stock-badge.out-of-stock {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .breadcrumb-custom {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 20px;
+            border-radius: 50px;
+            margin-bottom: 25px;
+        }
+        
+        .breadcrumb-custom a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb-custom a:hover {
+            color: var(--primary-color);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载状态 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- 顶部导航 -->
+    <nav class="top-nav py-3">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <a href="/shop" class="brand-logo text-decoration-none">
+                    <i class="bi bi-bag-heart-fill me-2"></i>优品商城
+                </a>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/shop" class="btn btn-link text-decoration-none">
+                        <i class="bi bi-house me-1"></i>首页
+                    </a>
+                    <a href="/shop/cart" class="nav-icon-btn text-decoration-none">
+                        <i class="bi bi-cart3"></i>
+                        <span class="cart-badge" id="cartCount">0</span>
+                    </a>
+                    <a href="/shop/orders" class="nav-icon-btn text-decoration-none">
+                        <i class="bi bi-bag-check"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主内容 -->
+    <div class="main-content">
+        <div class="container">
+            <!-- 面包屑 -->
+            <div class="breadcrumb-custom">
+                <a href="/shop"><i class="bi bi-house me-1"></i>首页</a>
+                <span class="mx-2">/</span>
+                <a href="#" id="categoryLink">分类</a>
+                <span class="mx-2">/</span>
+                <span class="text-dark" id="productNameBread">商品详情</span>
+            </div>
+            
+            <!-- 商品详情卡片 -->
+            <div class="product-detail-card">
+                <div class="row g-0">
+                    <!-- 商品图片 -->
+                    <div class="col-lg-5">
+                        <div class="product-gallery">
+                            <div class="main-image">
+                                <img id="mainImage" src="https://via.placeholder.com/400x400?text=Loading..." alt="商品图片">
+                            </div>
+                            <div class="thumbnail-list" id="thumbnailList">
+                                <!-- 缩略图动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 商品信息 -->
+                    <div class="col-lg-7">
+                        <div class="product-info-section">
+                            <h1 class="product-title" id="productName">商品名称</h1>
+                            <p class="product-subtitle" id="productDesc">商品描述</p>
+                            
+                            <div class="price-section">
+                                <span class="current-price" id="currentPrice">¥0.00</span>
+                                <span class="original-price" id="originalPrice">¥0.00</span>
+                                <span class="discount-tag" id="discountTag" style="display: none;">0% OFF</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">库存</span>
+                                <span class="info-value">
+                                    <span class="stock-badge in-stock" id="stockBadge">有货</span>
+                                    <span class="ms-2 text-muted" id="stockNum">剩余 0 件</span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">销量</span>
+                                <span class="info-value" id="salesNum">0 件</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">分类</span>
+                                <span class="info-value" id="categoryName">-</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">数量</span>
+                                <div class="quantity-selector">
+                                    <button class="quantity-btn" onclick="changeQuantity(-1)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="number" class="quantity-input" id="quantity" value="1" min="1">
+                                    <button class="quantity-btn" onclick="changeQuantity(1)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="btn-add-cart" onclick="addToCart()">
+                                    <i class="bi bi-cart-plus me-2"></i>加入购物车
+                                </button>
+                                <button class="btn-buy-now" onclick="buyNow()">
+                                    <i class="bi bi-lightning-fill me-2"></i>立即购买
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 商品描述 -->
+            <div class="product-description">
+                <h3 class="section-title"><i class="bi bi-file-text me-2"></i>商品详情</h3>
+                <div id="productDetail">
+                    <p class="text-muted">暂无详细描述</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                <strong class="me-auto">提示</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = '/api';
+        let product = null;
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            
+            if (productId) {
+                loadProduct(productId);
+            } else {
+                window.location.href = '/shop';
+            }
+            
+            updateCartCount();
+        });
+        
+        async function loadProduct(productId) {
+            try {
+                const response = await fetch(`${API_BASE}/product/products/${productId}`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                });
+                const result = await response.json();
+                
+                document.getElementById('loadingOverlay').style.display = 'none';
+                
+                if (result.code === 200 && result.data) {
+                    product = result.data;
+                    renderProduct();
+                } else {
+                    alert('商品不存在');
+                    window.location.href = '/shop';
+                }
+            } catch (error) {
+                console.error('加载商品失败:', error);
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+        
+        function renderProduct() {
+            document.title = product.name + ' - 优品商城';
+            document.getElementById('productName').textContent = product.name;
+            document.getElementById('productNameBread').textContent = product.name;
+            document.getElementById('productDesc').textContent = product.description || '暂无描述';
+            document.getElementById('currentPrice').textContent = '¥' + product.price.toFixed(2);
+            document.getElementById('salesNum').textContent = (product.sales || 0) + ' 件';
+            document.getElementById('categoryName').textContent = product.categoryName || '-';
+            
+            // 原价和折扣
+            if (product.marketPrice && product.marketPrice > product.price) {
+                document.getElementById('originalPrice').textContent = '¥' + product.marketPrice.toFixed(2);
+                document.getElementById('originalPrice').style.display = 'inline';
+                const discount = Math.round((1 - product.price / product.marketPrice) * 100);
+                document.getElementById('discountTag').textContent = discount + '% OFF';
+                document.getElementById('discountTag').style.display = 'inline';
+            } else {
+                document.getElementById('originalPrice').style.display = 'none';
+                document.getElementById('discountTag').style.display = 'none';
+            }
+            
+            // 库存
+            const stock = product.stock || 0;
+            const stockBadge = document.getElementById('stockBadge');
+            const stockNum = document.getElementById('stockNum');
+            stockNum.textContent = '剩余 ' + stock + ' 件';
+            
+            if (stock === 0) {
+                stockBadge.className = 'stock-badge out-of-stock';
+                stockBadge.textContent = '缺货';
+            } else if (stock < 10) {
+                stockBadge.className = 'stock-badge low-stock';
+                stockBadge.textContent = '库存紧张';
+            } else {
+                stockBadge.className = 'stock-badge in-stock';
+                stockBadge.textContent = '有货';
+            }
+            
+            // 图片
+            const mainImage = product.mainImage || 'https://via.placeholder.com/400x400?text=No+Image';
+            document.getElementById('mainImage').src = mainImage;
+            
+            // 缩略图
+            const thumbnailList = document.getElementById('thumbnailList');
+            thumbnailList.innerHTML = '';
+            
+            const images = product.images ? product.images.split(',') : [mainImage];
+            if (!images.includes(mainImage)) {
+                images.unshift(mainImage);
+            }
+            
+            images.forEach((img, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+                thumb.innerHTML = `<img src="${img}" alt="缩略图" onerror="this.src='https://via.placeholder.com/70x70?text=No+Image'">`;
+                thumb.onclick = function() {
+                    document.getElementById('mainImage').src = img;
+                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                };
+                thumbnailList.appendChild(thumb);
+            });
+            
+            // 详情
+            document.getElementById('productDetail').innerHTML = product.description ? 
+                `<p>${product.description}</p>` : '<p class="text-muted">暂无详细描述</p>';
+        }
+        
+        function changeQuantity(delta) {
+            const input = document.getElementById('quantity');
+            let value = parseInt(input.value) + delta;
+            const maxStock = product ? (product.stock || 99) : 99;
+            value = Math.max(1, Math.min(value, maxStock));
+            input.value = value;
+        }
+        
+        function addToCart() {
+            if (!product) return;
+            
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const existItem = cart.find(item => item.productId === product.id);
+            
+            if (existItem) {
+                existItem.quantity += quantity;
+            } else {
+                cart.push({
+                    productId: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.mainImage,
+                    quantity: quantity
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            showToast('已加入购物车');
+        }
+        
+        function buyNow() {
+            if (!product) return;
+            
+            addToCart();
+            window.location.href = '/shop/cart';
+        }
+        
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+        
+        function showToast(message) {
+            document.getElementById('toastMessage').textContent = message;
+            const toast = new bootstrap.Toast(document.getElementById('toast'));
+            toast.show();
+        }
+    </script>
+</body>
+</html>
+

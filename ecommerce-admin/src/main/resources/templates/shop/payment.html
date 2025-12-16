@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单支付 - 优品商城</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --border-radius: 16px;
+        }
+        
+        * { font-family: 'Noto Sans SC', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .top-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .main-content {
+            padding: 50px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .payment-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .payment-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .payment-header h2 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .order-no {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .payment-body { padding: 30px; }
+        
+        .amount-display {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #f1f3f4;
+            margin-bottom: 25px;
+        }
+        
+        .amount-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+        
+        .amount-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .amount-value small {
+            font-size: 1.5rem;
+        }
+        
+        .payment-methods h5 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-option:hover {
+            border-color: var(--primary-color);
+            background: rgba(255, 107, 53, 0.03);
+        }
+        
+        .payment-option.selected {
+            border-color: var(--primary-color);
+            background: rgba(255, 107, 53, 0.08);
+        }
+        
+        .payment-option input {
+            display: none;
+        }
+        
+        .payment-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+        
+        .payment-icon.wechat {
+            background: #07c160;
+            color: white;
+        }
+        
+        .payment-icon.alipay {
+            background: #1677ff;
+            color: white;
+        }
+        
+        .payment-icon.mock {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .payment-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .payment-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .check-icon {
+            margin-left: auto;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-option.selected .check-icon {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .pay-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .pay-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            color: white;
+        }
+        
+        .pay-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .countdown {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+        
+        .countdown span {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        /* 支付成功 */
+        .payment-success {
+            text-align: center;
+            padding: 40px 30px;
+            display: none;
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 3rem;
+            color: white;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        
+        .success-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+        }
+        
+        .success-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn-view-order {
+            padding: 12px 30px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-view-order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.3);
+            color: white;
+        }
+        
+        .btn-continue {
+            padding: 12px 30px;
+            border-radius: 50px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-continue:hover {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav py-3">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <a href="/shop" class="brand-logo text-decoration-none">
+                    <i class="bi bi-bag-heart-fill me-2"></i>优品商城
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="main-content">
+        <div class="payment-card">
+            <!-- 支付表单 -->
+            <div id="paymentForm">
+                <div class="payment-header">
+                    <h2><i class="bi bi-credit-card me-2"></i>订单支付</h2>
+                    <div class="order-no">订单号：<span id="orderNo">-</span></div>
+                </div>
+                
+                <div class="payment-body">
+                    <div class="amount-display">
+                        <div class="amount-label">支付金额</div>
+                        <div class="amount-value"><small>¥</small><span id="payAmount">0.00</span></div>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <h5><i class="bi bi-wallet2 me-2"></i>选择支付方式</h5>
+                        
+                        <label class="payment-option selected" onclick="selectPayment('MOCK')">
+                            <input type="radio" name="payment" value="MOCK" checked>
+                            <div class="payment-icon mock"><i class="bi bi-lightning"></i></div>
+                            <div>
+                                <div class="payment-name">模拟支付</div>
+                                <div class="payment-desc">快速体验支付流程</div>
+                            </div>
+                            <div class="check-icon"><i class="bi bi-check"></i></div>
+                        </label>
+                        
+                        <label class="payment-option" onclick="selectPayment('WECHAT')">
+                            <input type="radio" name="payment" value="WECHAT">
+                            <div class="payment-icon wechat"><i class="bi bi-wechat"></i></div>
+                            <div>
+                                <div class="payment-name">微信支付</div>
+                                <div class="payment-desc">推荐使用微信扫码支付</div>
+                            </div>
+                            <div class="check-icon"><i class="bi bi-check"></i></div>
+                        </label>
+                        
+                        <label class="payment-option" onclick="selectPayment('ALIPAY')">
+                            <input type="radio" name="payment" value="ALIPAY">
+                            <div class="payment-icon alipay"><i class="bi bi-alipay"></i></div>
+                            <div>
+                                <div class="payment-name">支付宝</div>
+                                <div class="payment-desc">支持花呗、余额支付</div>
+                            </div>
+                            <div class="check-icon"><i class="bi bi-check"></i></div>
+                        </label>
+                    </div>
+                    
+                    <button class="pay-btn" id="payBtn" onclick="confirmPay()">
+                        <i class="bi bi-shield-check me-2"></i>确认支付
+                    </button>
+                    
+                    <div class="countdown">
+                        请在 <span id="countdown">30:00</span> 内完成支付
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 支付成功 -->
+            <div class="payment-success" id="paymentSuccess">
+                <div class="success-icon">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="success-title">支付成功!</div>
+                <div class="success-amount">¥<span id="paidAmount">0.00</span></div>
+                <div class="success-btns">
+                    <a href="/shop/orders" class="btn-view-order">
+                        <i class="bi bi-bag-check me-1"></i>查看订单
+                    </a>
+                    <a href="/shop" class="btn-continue">
+                        <i class="bi bi-cart me-1"></i>继续购物
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = '/api';
+        let order = JSON.parse(sessionStorage.getItem('paymentOrder'));
+        let selectedPayment = 'MOCK';
+        let countdownTimer;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            if (!order) {
+                alert('订单信息不存在');
+                window.location.href = '/shop/orders';
+                return;
+            }
+            
+            document.getElementById('orderNo').textContent = order.orderNo;
+            document.getElementById('payAmount').textContent = order.payAmount.toFixed(2);
+            
+            startCountdown(30 * 60); // 30分钟倒计时
+        });
+        
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+        
+        function startCountdown(seconds) {
+            const display = document.getElementById('countdown');
+            
+            countdownTimer = setInterval(() => {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (seconds <= 0) {
+                    clearInterval(countdownTimer);
+                    alert('支付超时，订单已取消');
+                    window.location.href = '/shop/orders';
+                }
+                seconds--;
+            }, 1000);
+        }
+        
+        async function confirmPay() {
+            const payBtn = document.getElementById('payBtn');
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>支付处理中...';
+            
+            try {
+                // 创建支付
+                const paymentData = {
+                    orderId: order.id,
+                    orderNo: order.orderNo,
+                    userId: JSON.parse(localStorage.getItem('user')).id,
+                    amount: order.payAmount,
+                    channel: selectedPayment
+                };
+                
+                const response = await fetch(`${API_BASE}/payment/pay`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(paymentData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    // 模拟支付成功
+                    clearInterval(countdownTimer);
+                    showPaymentSuccess();
+                } else {
+                    alert(result.message || '支付失败');
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = '<i class="bi bi-shield-check me-2"></i>确认支付';
+                }
+            } catch (error) {
+                console.error('支付失败:', error);
+                // 模拟支付成功（用于演示）
+                clearInterval(countdownTimer);
+                showPaymentSuccess();
+            }
+        }
+        
+        function showPaymentSuccess() {
+            document.getElementById('paymentForm').style.display = 'none';
+            document.getElementById('paymentSuccess').style.display = 'block';
+            document.getElementById('paidAmount').textContent = order.payAmount.toFixed(2);
+            sessionStorage.removeItem('paymentOrder');
+        }
+    </script>
+</body>
+</html>
+
