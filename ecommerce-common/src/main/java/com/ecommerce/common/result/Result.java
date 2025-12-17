@@ -86,6 +86,13 @@ public class Result<T> implements Serializable {
     }
     
     /**
+     * 失败响应（fail别名）
+     */
+    public static <T> Result<T> fail(String message) {
+        return error(message);
+    }
+    
+    /**
      * 判断是否成功
      */
     public boolean isSuccess() {
