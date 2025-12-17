@@ -20,6 +20,18 @@
         .table th { background: #f8f9fa; font-weight: 600; }
         .btn-action { padding: 5px 10px; font-size: 0.85rem; }
         .product-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+        .upload-zone { border: 2px dashed #dee2e6; border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; background: #f8f9fa; }
+        .upload-zone:hover { border-color: var(--secondary-color); background: #e8f4fd; }
+        .upload-zone.dragover { border-color: var(--secondary-color); background: #e8f4fd; transform: scale(1.02); }
+        .upload-zone i { font-size: 3rem; color: #adb5bd; margin-bottom: 10px; }
+        .upload-zone p { margin: 0; color: #6c757d; }
+        .upload-zone .hint { font-size: 0.85rem; color: #adb5bd; margin-top: 5px; }
+        .image-preview { position: relative; display: inline-block; margin-top: 15px; }
+        .image-preview img { max-width: 200px; max-height: 150px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .image-preview .remove-btn { position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .image-preview .remove-btn:hover { background: #c82333; }
+        .upload-progress { margin-top: 10px; display: none; }
+        .upload-progress .progress { height: 8px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -110,8 +122,23 @@
                             <textarea class="form-control" name="description" rows="3"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">主图URL</label>
-                            <input type="text" class="form-control" name="mainImage" placeholder="https://example.com/image.jpg">
+                            <label class="form-label">商品主图</label>
+                            <input type="hidden" name="mainImage" id="mainImageUrl">
+                            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('imageInput').click()">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <p>点击或拖拽图片到此处上传</p>
+                                <p class="hint">支持 JPG、PNG、GIF 格式，最大 5MB</p>
+                            </div>
+                            <input type="file" id="imageInput" accept="image/*" style="display: none" onchange="handleFileSelect(event)">
+                            <div class="upload-progress" id="uploadProgress">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="image-preview" id="imagePreview" style="display: none">
+                                <img id="previewImg" src="" alt="预览">
+                                <button type="button" class="remove-btn" onclick="removeImage()"><i class="bi bi-x"></i></button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -126,6 +153,7 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_BASE = 'http://localhost:8080/api';
+        let uploadedImageUrl = '';
         
         // 登录检查
         function checkLogin() {
@@ -137,6 +165,124 @@
         }
         function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/login'; }
         if (!checkLogin()) { throw new Error('未登录'); }
+        
+        // 图片上传相关
+        const uploadZone = document.getElementById('uploadZone');
+        
+        // 拖拽事件
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadImage(files[0]);
+            }
+        });
+        
+        // 选择文件
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                uploadImage(file);
+            }
+        }
+        
+        // 上传图片
+        function uploadImage(file) {
+            // 验证文件类型
+            if (!file.type.startsWith('image/')) {
+                alert('请选择图片文件');
+                return;
+            }
+            
+            // 验证文件大小
+            if (file.size > 5 * 1024 * 1024) {
+                alert('图片大小不能超过5MB');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // 显示上传进度
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = progressDiv.querySelector('.progress-bar');
+            progressDiv.style.display = 'block';
+            progressBar.style.width = '0%';
+            uploadZone.style.display = 'none';
+            
+            // 使用XMLHttpRequest以便显示进度
+            const xhr = new XMLHttpRequest();
+            
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 100;
+                    progressBar.style.width = percent + '%';
+                }
+            });
+            
+            xhr.addEventListener('load', () => {
+                progressDiv.style.display = 'none';
+                
+                if (xhr.status === 200) {
+                    const result = JSON.parse(xhr.responseText);
+                    if (result.code === 200) {
+                        uploadedImageUrl = result.data;
+                        document.getElementById('mainImageUrl').value = uploadedImageUrl;
+                        
+                        // 显示预览
+                        const previewImg = document.getElementById('previewImg');
+                        // 通过网关访问图片
+                        previewImg.src = 'http://localhost:8080' + uploadedImageUrl;
+                        document.getElementById('imagePreview').style.display = 'inline-block';
+                    } else {
+                        alert(result.message || '上传失败');
+                        uploadZone.style.display = 'block';
+                    }
+                } else {
+                    alert('上传失败，请重试');
+                    uploadZone.style.display = 'block';
+                }
+            });
+            
+            xhr.addEventListener('error', () => {
+                progressDiv.style.display = 'none';
+                uploadZone.style.display = 'block';
+                alert('上传失败，请检查网络');
+            });
+            
+            xhr.open('POST', API_BASE + '/upload/image');
+            xhr.send(formData);
+        }
+        
+        // 移除已上传的图片
+        function removeImage() {
+            uploadedImageUrl = '';
+            document.getElementById('mainImageUrl').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('uploadZone').style.display = 'block';
+            document.getElementById('imageInput').value = '';
+        }
+        
+        // 重置上传区域（用于模态框关闭时）
+        function resetUploadZone() {
+            removeImage();
+        }
+        
+        // 模态框关闭时重置
+        document.getElementById('productModal').addEventListener('hidden.bs.modal', function () {
+            resetUploadZone();
+        });
         
         function loadProducts() {
             fetch(`${API_BASE}/product/list`)
@@ -157,10 +303,16 @@
                 tbody.innerHTML = '<tr><td colspan="9" class="text-center">暂无数据</td></tr>';
                 return;
             }
-            tbody.innerHTML = products.map(p => `
+            tbody.innerHTML = products.map(p => {
+                // 处理图片URL，如果是相对路径则通过网关访问
+                let imgSrc = p.mainImage || 'https://via.placeholder.com/50';
+                if (imgSrc.startsWith('/uploads')) {
+                    imgSrc = 'http://localhost:8080' + imgSrc;
+                }
+                return `
                 <tr>
                     <td>${p.id}</td>
-                    <td><img src="${p.mainImage || 'https://via.placeholder.com/50'}" class="product-img" onerror="this.src='https://via.placeholder.com/50'"></td>
+                    <td><img src="${imgSrc}" class="product-img" onerror="this.src='https://via.placeholder.com/50'"></td>
                     <td>${p.name}</td>
                     <td>${p.categoryName || '-'}</td>
                     <td class="text-danger">¥${p.price}</td>
@@ -176,7 +328,7 @@
                         </button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
         
         function saveProduct() {
@@ -185,6 +337,11 @@
             data.categoryId = parseInt(data.categoryId);
             data.price = parseFloat(data.price);
             if (data.marketPrice) data.marketPrice = parseFloat(data.marketPrice);
+            
+            // 使用上传的图片URL
+            if (uploadedImageUrl) {
+                data.mainImage = uploadedImageUrl;
+            }
             
             fetch(`${API_BASE}/product`, {
                 method: 'POST',
@@ -196,6 +353,7 @@
                 if (result.code === 200) {
                     bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
                     form.reset();
+                    resetUploadZone();
                     loadProducts();
                     alert('添加成功');
                 } else {

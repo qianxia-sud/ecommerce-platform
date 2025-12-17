@@ -29,6 +29,20 @@ spring:
           filters:
             - StripPrefix=1
         
+        # 文件上传服务
+        - id: upload-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/upload/**
+          filters:
+            - StripPrefix=1
+        
+        # 静态资源（上传的图片）
+        - id: uploads-service
+          uri: lb://product-service
+          predicates:
+            - Path=/uploads/**
+        
         # 库存服务
         - id: inventory-service
           uri: lb://inventory-service
